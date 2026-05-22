@@ -2,9 +2,12 @@ package co.edu.unbosque.controller;
 
 import java.util.List;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +22,7 @@ import co.edu.unbosque.entity.Partido;
 import co.edu.unbosque.entity.Auditoria;
 import co.edu.unbosque.service.api.PartidoServiceAPI;
 import co.edu.unbosque.service.api.AuditoriaServiceAPI;
+import co.edu.unbosque.service.api.ReporteServiceAPI;
 import co.edu.unbosque.utils.ResourceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,6 +41,9 @@ public class PartidoRestController {
 
 	@Autowired
 	private AuditoriaServiceAPI auditoriaServiceAPI;
+
+	@Autowired
+	private ReporteServiceAPI reporteServiceAPI;
 
 	private static final Logger logger = LogManager.getLogger(PartidoRestController.class);
 
@@ -102,5 +109,50 @@ public class PartidoRestController {
 			return new ResponseEntity<>(partido, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return new ResponseEntity<>(partido, HttpStatus.OK);
+	}
+
+
+	@GetMapping(value = "/reporte/excel")
+	public ResponseEntity<byte[]> descargarReporteExcel() {
+		try {
+			logger.info("Generando reporte de partidos en Excel");
+			byte[] contenido = reporteServiceAPI.generarReportePartidosExcel();
+
+			String fecha = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+			String nombreArchivo = "reporte_partidos_" + fecha + ".xlsx";
+
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType
+					.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+			headers.setContentDispositionFormData("attachment", nombreArchivo);
+			headers.setContentLength(contenido.length);
+
+			return new ResponseEntity<>(contenido, headers, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error al generar reporte Excel de partidos", e);
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	
+	@GetMapping(value = "/reporte/pdf")
+	public ResponseEntity<byte[]> descargarReportePDF() {
+		try {
+			logger.info("Generando reporte de partidos en PDF");
+			byte[] contenido = reporteServiceAPI.generarReportePartidosPDF();
+
+			String fecha = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+			String nombreArchivo = "reporte_partidos_" + fecha + ".pdf";
+
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_PDF);
+			headers.setContentDispositionFormData("attachment", nombreArchivo);
+			headers.setContentLength(contenido.length);
+
+			return new ResponseEntity<>(contenido, headers, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error al generar reporte PDF de partidos", e);
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 }

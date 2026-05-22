@@ -66,7 +66,6 @@ public class UsuarioRestController {
 		String accion = "ACTUALIZAR";
 		String password = usuario.getPassword();
 
-		// Validar la contraseña
 		if (usuario.getPassword() != null && !usuario.getPassword().isEmpty()) {
 
 			if (usuario.getPassword().length() != 40) {
@@ -74,8 +73,10 @@ public class UsuarioRestController {
 				if (!utilidad.validarComplejidadClave(usuario.getPassword())) {
 					logger.warn("Estructura de contraseña inválida para el usuario: {}", usuario.getUsername());
 					throw new VerificacionContrasenaException("La contraseña debe tener:"
-							+ "\n - Entre 6 y 8 caracteres" + "\n - Incluir al menos una mayúscula "
-							+ "\n - Incluir una minúscula" + "\n - Incluir un número.");
+							+ "\n - Entre 6 y 8 caracteres" 
+							+ "\n - Incluir al menos una mayúscula "
+							+ "\n - Incluir una minúscula" 
+							+ "\n - Incluir un número.");
 				}
 
 				usuario.setPassword(utilidad.generarHash(usuario.getPassword()));
