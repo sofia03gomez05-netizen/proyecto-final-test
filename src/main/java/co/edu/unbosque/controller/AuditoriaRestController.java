@@ -38,15 +38,4 @@ public class AuditoriaRestController {
         }
         return ResponseEntity.ok().body(auditoria);
     }
-
-    @DeleteMapping(value = "/deleteAuditoria/{id}")
-    public ResponseEntity<Auditoria> delete(@PathVariable Long id) {
-        Auditoria auditoria = auditoriaServiceAPI.get(id);
-        if (auditoria != null) {
-            auditoriaServiceAPI.delete(id);
-        } else {
-            return new ResponseEntity<Auditoria>(auditoria, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return new ResponseEntity<Auditoria>(auditoria, HttpStatus.OK);
-    }
 }

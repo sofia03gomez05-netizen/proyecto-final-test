@@ -12,7 +12,7 @@ public class Partido implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_partido")
-    private Integer idPartido;
+    private Long idPartido;
 
     @Column(name = "id_equipo_local")
     private Integer idEquipoLocal;
@@ -37,8 +37,8 @@ public class Partido implements Serializable {
 
     public Partido() {}
 
-    public Integer getIdPartido() { return idPartido; }
-    public void setIdPartido(Integer idPartido) { this.idPartido = idPartido; }
+    public Long getIdPartido() { return idPartido; }
+    public void setIdPartido(Long idPartido) { this.idPartido = idPartido; }
 
     public Integer getIdEquipoLocal() { return idEquipoLocal; }
     public void setIdEquipoLocal(Integer idEquipoLocal) { this.idEquipoLocal = idEquipoLocal; }
